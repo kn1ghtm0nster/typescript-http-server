@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+dist/
+build/
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Config files
+*.config.js
+.prettierrc
+.eslintrc*
+
+# Generated files
+.next/
+.nuxt/
+coverage/
+
+# Other
+.git/
+.env*
