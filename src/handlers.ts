@@ -10,7 +10,16 @@ export const handlerReadiness = (
 };
 
 export const hitsHandler = (req: Request, res: Response): Promise<void> => {
-  res.send(`Hits: ${config.fileserverHits}`);
+  res.set('Content-Type', 'text/html; charset=utf-8').send(
+    `
+    <html>
+      <body>
+        <h1>Welcome, Chirpy Admin</h1>
+        <p>Chirpy has been visited ${config.fileserverHits} times!</p>
+      </body>
+    </html>
+  `
+  );
   return Promise.resolve();
 };
 
