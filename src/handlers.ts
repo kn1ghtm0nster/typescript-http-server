@@ -39,16 +39,26 @@ export const handlerValidateChirp = (
   type parameters = {
     body: string;
   };
-  try {
-    let body: parameters = req.body;
+  const invalidWords = ['kerfuffle', 'sharbert', 'fornax'];
 
-    if (body.body.length > 140) {
+  try {
+    let reqBody: parameters = req.body;
+
+    if (reqBody.body.length > 140) {
       res.status(400).send({
         error: 'Chirp is too long',
       });
     } else {
+      const chirpArray = reqBody.body.split(' ');
+      for (let i = 0; i < chirpArray.length; i++) {
+        let currWord = chirpArray[i];
+        if (invalidWords.includes(currWord.toLowerCase())) {
+          chirpArray[i] = '****';
+        }
+        reqBody.body = chirpArray.join(' ');
+      }
       res.status(200).send({
-        valid: true,
+        cleanedBody: reqBody.body,
       });
     }
   } catch (error) {
