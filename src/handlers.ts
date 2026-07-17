@@ -1,5 +1,7 @@
 import { type Request, type Response, type NextFunction } from 'express';
+
 import { config } from './config.js';
+import { BadRequestError } from './errors.js';
 
 export const handlerReadiness = (
   req: Request,
@@ -45,7 +47,7 @@ export const handlerValidateChirp = (
   let reqBody: parameters = req.body;
   try {
     if (reqBody.body.length > 140) {
-      throw new Error('Something went wrong on our end');
+      throw new BadRequestError('Chirp is too long. Max length is 140');
     } else {
       const chirpArray = reqBody.body.split(' ');
       for (let i = 0; i < chirpArray.length; i++) {
