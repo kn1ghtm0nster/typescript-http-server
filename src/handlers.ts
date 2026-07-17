@@ -1,4 +1,4 @@
-import { type Request, type Response } from 'express';
+import { type Request, type Response, type NextFunction } from 'express';
 import { config } from './config.js';
 
 export const handlerReadiness = (
@@ -34,20 +34,18 @@ export const handlerResetHits = (
 
 export const handlerValidateChirp = (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ): Promise<void> => {
   type parameters = {
     body: string;
   };
   const invalidWords = ['kerfuffle', 'sharbert', 'fornax'];
 
+  let reqBody: parameters = req.body;
   try {
-    let reqBody: parameters = req.body;
-
     if (reqBody.body.length > 140) {
-      res.status(400).send({
-        error: 'Chirp is too long',
-      });
+      throw new Error('Something went wrong on our end');
     } else {
       const chirpArray = reqBody.body.split(' ');
       for (let i = 0; i < chirpArray.length; i++) {
@@ -62,9 +60,7 @@ export const handlerValidateChirp = (
       });
     }
   } catch (error) {
-    res.status(400).send({
-      error: 'Something went wrong',
-    });
+    next(error);
   }
 
   return Promise.resolve();

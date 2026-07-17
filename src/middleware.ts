@@ -24,3 +24,16 @@ export function middlewareMetricsInc(
   config.fileserverHits += 1;
   next();
 }
+
+export const errorHandlerMiddleware = (
+  err: Error,
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
+  console.log(err);
+  res.status(500).json({
+    error: err.message,
+  });
+  next();
+};
