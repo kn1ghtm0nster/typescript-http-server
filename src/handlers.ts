@@ -1,7 +1,8 @@
 import { type Request, type Response, type NextFunction } from 'express';
 
 import { config } from './config.js';
-import { BadRequestError } from './errors.js';
+import { BadRequestError, ForbiddenError } from './errors.js';
+import { createUser, resetUsersTable } from './db/queries/users.js';
 
 export const handlerReadiness = (
   req: Request,
@@ -25,11 +26,15 @@ export const hitsHandler = (req: Request, res: Response): Promise<void> => {
   return Promise.resolve();
 };
 
-export const handlerResetHits = (
+export const handlerResetHits = async (
   req: Request,
   res: Response
 ): Promise<void> => {
+  if (config.platform !== 'dev') {
+    throw new ForbiddenError('Resetting is only allowed in dev mode');
+  }
   config.fileserverHits = 0;
+  await resetUsersTable();
   res.send();
   return Promise.resolve();
 };
@@ -66,4 +71,21 @@ export const handlerValidateChirp = (
   }
 
   return Promise.resolve();
+};
+
+export const handlerCreateUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      throw new BadRequestError('Email is required');
+    }
+    const newUser = await createUser({ email });
+    res.status(201).json(newUser);
+  } catch (error) {
+    next(error);
+  }
 };
