@@ -3,6 +3,7 @@ import { type Request, type Response, type NextFunction } from 'express';
 import { config } from './config.js';
 import { BadRequestError, ForbiddenError } from './errors.js';
 import { createUser, resetUsersTable } from './db/queries/users.js';
+import { createChirp } from './db/queries/chirps.js';
 
 export const handlerReadiness = (
   req: Request,
@@ -85,6 +86,35 @@ export const handlerCreateUser = async (
     }
     const newUser = await createUser({ email });
     res.status(201).json(newUser);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const handlerCreateChirp = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const invalidWords = ['kerfuffle', 'sharbert', 'fornax'];
+    const { body, userId } = req.body;
+    if (!body || !userId) {
+      throw new BadRequestError('Body and userId are required');
+    } else if (body.length > 140) {
+      throw new BadRequestError('Chirp is too long. Max length is 140');
+    } else {
+      const chirpArray = body.split(' ');
+      for (let i = 0; i < chirpArray.length; i++) {
+        let currWord = chirpArray[i];
+        if (invalidWords.includes(currWord.toLowerCase())) {
+          chirpArray[i] = '****';
+        }
+      }
+      const cleanedBody = chirpArray.join(' ');
+      const newChirp = await createChirp({ body: cleanedBody, userId });
+      res.status(201).json(newChirp);
+    }
   } catch (error) {
     next(error);
   }

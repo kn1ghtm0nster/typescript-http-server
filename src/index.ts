@@ -7,8 +7,8 @@ import {
   handlerReadiness,
   hitsHandler,
   handlerResetHits,
-  handlerValidateChirp,
   handlerCreateUser,
+  handlerCreateChirp,
 } from './handlers.js';
 import {
   middlewareLogResponses,
@@ -27,11 +27,11 @@ app.use(middlewareLogResponses);
 app.use(express.json());
 app.use('/app', middlewareMetricsInc, express.static('./src/app'));
 
-app.get('/api/healthz', handlerReadiness);
 app.get('/admin/metrics', hitsHandler);
 app.post('/admin/reset', handlerResetHits);
-app.post('/api/validate_chirp', handlerValidateChirp);
+app.get('/api/healthz', handlerReadiness);
 app.post('/api/users', handlerCreateUser);
+app.post('/api/chirps', handlerCreateChirp);
 
 app.use(errorHandlerMiddleware);
 
