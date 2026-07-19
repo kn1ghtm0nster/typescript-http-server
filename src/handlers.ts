@@ -3,7 +3,7 @@ import { type Request, type Response, type NextFunction } from 'express';
 import { config } from './config.js';
 import { BadRequestError, ForbiddenError } from './errors.js';
 import { createUser, resetUsersTable } from './db/queries/users.js';
-import { createChirp } from './db/queries/chirps.js';
+import { createChirp, getChirps } from './db/queries/chirps.js';
 
 export const handlerReadiness = (
   req: Request,
@@ -115,6 +115,19 @@ export const handlerCreateChirp = async (
       const newChirp = await createChirp({ body: cleanedBody, userId });
       res.status(201).json(newChirp);
     }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const handlerGetChirps = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const chirps = await getChirps();
+    res.status(200).json(chirps);
   } catch (error) {
     next(error);
   }

@@ -1,4 +1,4 @@
-import express, { type Express, type Request, type Response } from 'express';
+import express, { type Express } from 'express';
 import postgres from 'postgres';
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
 import { drizzle } from 'drizzle-orm/postgres-js';
@@ -9,6 +9,7 @@ import {
   handlerResetHits,
   handlerCreateUser,
   handlerCreateChirp,
+  handlerGetChirps,
 } from './handlers.js';
 import {
   middlewareLogResponses,
@@ -32,6 +33,7 @@ app.post('/admin/reset', handlerResetHits);
 app.get('/api/healthz', handlerReadiness);
 app.post('/api/users', handlerCreateUser);
 app.post('/api/chirps', handlerCreateChirp);
+app.get('/api/chirps', handlerGetChirps);
 
 app.use(errorHandlerMiddleware);
 
