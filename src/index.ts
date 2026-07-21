@@ -10,6 +10,7 @@ import {
   handlerCreateUser,
   handlerCreateChirp,
   handlerGetChirps,
+  handlerGetChirp,
 } from './handlers.js';
 import {
   middlewareLogResponses,
@@ -34,6 +35,7 @@ app.get('/api/healthz', handlerReadiness);
 app.post('/api/users', handlerCreateUser);
 app.post('/api/chirps', handlerCreateChirp);
 app.get('/api/chirps', handlerGetChirps);
+app.get('/api/chirps/:chirpId', handlerGetChirp);
 
 app.use(errorHandlerMiddleware);
 
