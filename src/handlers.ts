@@ -1,9 +1,18 @@
 import { type Request, type Response, type NextFunction } from 'express';
 
 import { config } from './config.js';
-import { BadRequestError, ForbiddenError } from './errors.js';
-import { createUser, resetUsersTable } from './db/queries/users.js';
+import {
+  BadRequestError,
+  ForbiddenError,
+  UnauthorizedError,
+} from './errors.js';
+import {
+  createUser,
+  getUserByEmail,
+  resetUsersTable,
+} from './db/queries/users.js';
 import { createChirp, getChirps, getChirp } from './db/queries/chirps.js';
+import { hashPassword, checkPasswordHash } from './auth.js';
 
 export const handlerReadiness = (
   req: Request,
@@ -80,12 +89,45 @@ export const handlerCreateUser = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { email } = req.body;
-    if (!email) {
-      throw new BadRequestError('Email is required');
+    const { email, password } = req.body;
+    if (!email || !password) {
+      throw new BadRequestError('Email and password are required');
     }
-    const newUser = await createUser({ email });
+    const hashedPassword = await hashPassword(password);
+    const newUser = await createUser({ email, hashedPassword });
     res.status(201).json(newUser);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const handlerLoginUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      throw new BadRequestError('Email and password are required');
+    }
+    const user = await getUserByEmail(email);
+    if (!user) {
+      throw new UnauthorizedError('Invalid email or password');
+    }
+    const validPassword = await checkPasswordHash(
+      password,
+      user.hashedPassword
+    );
+    if (!validPassword) {
+      throw new UnauthorizedError('Invalid email or password');
+    }
+    res.status(200).json({
+      id: user.id,
+      email: user.email,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    });
   } catch (error) {
     next(error);
   }

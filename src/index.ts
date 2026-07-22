@@ -11,6 +11,7 @@ import {
   handlerCreateChirp,
   handlerGetChirps,
   handlerGetChirp,
+  handlerLoginUser,
 } from './handlers.js';
 import {
   middlewareLogResponses,
@@ -33,6 +34,7 @@ app.get('/admin/metrics', hitsHandler);
 app.post('/admin/reset', handlerResetHits);
 app.get('/api/healthz', handlerReadiness);
 app.post('/api/users', handlerCreateUser);
+app.post('/api/login', handlerLoginUser);
 app.post('/api/chirps', handlerCreateChirp);
 app.get('/api/chirps', handlerGetChirps);
 app.get('/api/chirps/:chirpId', handlerGetChirp);

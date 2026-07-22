@@ -1,3 +1,5 @@
+import { eq } from 'drizzle-orm';
+
 import { db } from '../index.js';
 import { NewUser, users } from '../schema.js';
 
@@ -7,7 +9,18 @@ export async function createUser(user: NewUser) {
     .values(user)
     .onConflictDoNothing()
     .returning();
-  return result;
+
+  return {
+    id: result.id,
+    email: result.email,
+    createdAt: result.createdAt,
+    updatedAt: result.updatedAt,
+  };
+}
+
+export async function getUserByEmail(email: string) {
+  const [user] = await db.select().from(users).where(eq(users.email, email));
+  return user;
 }
 
 export async function resetUsersTable() {

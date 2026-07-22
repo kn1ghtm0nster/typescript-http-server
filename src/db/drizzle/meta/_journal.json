@@ -15,6 +15,13 @@
       "when": 1784487475652,
       "tag": "0001_huge_monster_badoon",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1784672282659,
+      "tag": "0002_complex_calypso",
+      "breakpoints": true
     }
   ]
 }
